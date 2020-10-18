@@ -41,6 +41,12 @@ from tensorflow.python.platform import gfile
 import math
 from six import iteritems
 
+
+#mxy's code
+def standard_deviation_loss(features, label, nrof_classes):
+    return tf.reduce_mean(tf.reduce_std(features, 0))
+
+
 def triplet_loss(anchor, positive, negative, alpha):
     """Calculate the triplet loss according to the FaceNet paper
     
@@ -60,7 +66,7 @@ def triplet_loss(anchor, positive, negative, alpha):
         loss = tf.reduce_mean(tf.maximum(basic_loss, 0.0), 0)
       
     return loss
-  
+
 def center_loss(features, label, alfa, nrof_classes):
     """Center loss based on the paper "A Discriminative Feature Learning Approach for Deep Face Recognition"
        (http://ydwen.github.io/papers/WenECCV16.pdf)

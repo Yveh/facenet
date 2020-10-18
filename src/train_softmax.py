@@ -172,6 +172,10 @@ def main(args):
         correct_prediction = tf.cast(tf.equal(tf.argmax(logits, 1), tf.cast(label_batch, tf.int64)), tf.float32)
         accuracy = tf.reduce_mean(correct_prediction)
         
+        # Add variance deviation loss  (our code)
+        standard_deviation_loss = facenet.standard_deviation_loss(prelogits, label_batch, nrof_classes)
+        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES,  standard_deviation_loss * args.std_loss_factor)
+
         # Calculate the total losses
         regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
         total_loss = tf.add_n([cross_entropy_mean] + regularization_losses, name='total_loss')
@@ -518,6 +522,9 @@ def parse_arguments(argv):
         help='L2 weight regularization.', default=0.0)
     parser.add_argument('--center_loss_factor', type=float,
         help='Center loss factor.', default=0.0)
+    parser.add_argument('--std_loss_factor', type=float,
+        help='Center loss factor.', default=0.0)
+
     parser.add_argument('--center_loss_alfa', type=float,
         help='Center update rate for center loss.', default=0.95)
     parser.add_argument('--prelogits_norm_loss_factor', type=float,
