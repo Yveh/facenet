@@ -445,6 +445,10 @@ def parse_arguments(argv):
         help='Number of batches per epoch.', default=1000)
     parser.add_argument('--alpha', type=float,
         help='Positive to negative triplet distance margin.', default=0.2)
+    parser.add_argument('--lambda', type=float,
+        help='Weight of inter-class distance in the triplet', default=1.0)
+    parser.add_argument('--bin_factor', type=float,
+        help='Weight of the binary-loss term', default=0.01)
     parser.add_argument('--embedding_size', type=int,
         help='Dimensionality of the embedding.', default=128)
     parser.add_argument('--random_crop', 

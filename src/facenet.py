@@ -44,7 +44,8 @@ from six import iteritems
 
 #mxy's code
 def standard_deviation_loss(features, label, nrof_classes):
-    return tf.reduce_mean(tf.reduce_std(features, 0))
+    _, var = tf.nn.moments(features, axes=[0])
+    return tf.reduce_mean(var)
 
 
 def triplet_loss(anchor, positive, negative, alpha):
