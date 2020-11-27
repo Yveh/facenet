@@ -136,11 +136,15 @@ def main(args):
         embeddings = tf.nn.l2_normalize(prelogits, 1, 1e-10, name='embeddings')
         # Split embeddings into anchor, positive and negative and calculate triplet loss
         anchor, positive, negative = tf.unstack(tf.reshape(embeddings, [-1,3,args.embedding_size]), 3, 1)
-        triplet_loss = facenet.triplet_loss(anchor, positive, negative, args.alpha)
+        triplet_loss = facenet.triplet_loss(anchor, positive, negative, args.alpha, args.intra_weight) # MODIFICATION: we added args.intra_weight
         
         learning_rate = tf.train.exponential_decay(learning_rate_placeholder, global_step,
             args.learning_rate_decay_epochs*args.epoch_size, args.learning_rate_decay_factor, staircase=True)
         tf.summary.scalar('learning_rate', learning_rate)
+
+        #MODIFICATION: Add variance deviation loss  (our code)
+        variance_deviation_loss = facenet.variance_deviation_loss(embeddings)
+        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES,  variance_deviation_loss * args.variance_loss_factor)
 
         # Calculate the total losses
         regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
@@ -469,6 +473,12 @@ def parse_arguments(argv):
         help='Number of epochs between learning rate decay.', default=100)
     parser.add_argument('--learning_rate_decay_factor', type=float,
         help='Learning rate decay factor.', default=1.0)
+    # ourcode 
+    parser.add_argument('--std_loss_factor', type=float,
+        help='Center loss factor.', default=0.0)
+    parser.add_argument('--intra_weight', type=float,
+        help='The weight of the intra-class term in triplet loss', default=1.0)
+    # end
     parser.add_argument('--moving_average_decay', type=float,
         help='Exponential decay for tracking of training parameters.', default=0.9999)
     parser.add_argument('--seed', type=int,

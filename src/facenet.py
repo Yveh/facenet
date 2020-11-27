@@ -43,12 +43,12 @@ from six import iteritems
 
 
 #mxy's code
-def standard_deviation_loss(features, label, nrof_classes):
+def variance_deviation_loss(features):
     _, var = tf.nn.moments(features, axes=[0])
     return tf.reduce_mean(var)
 
 
-def triplet_loss(anchor, positive, negative, alpha):
+def triplet_loss(anchor, positive, negative, alpha, intra_weight):
     """Calculate the triplet loss according to the FaceNet paper
     
     Args:
@@ -63,7 +63,7 @@ def triplet_loss(anchor, positive, negative, alpha):
         pos_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, positive)), 1)
         neg_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, negative)), 1)
         
-        basic_loss = tf.add(tf.subtract(pos_dist,neg_dist), alpha)
+        basic_loss = tf.add(tf.subtract(tf.multiply(pos_dist, intra_weight), neg_dist), alpha)
         loss = tf.reduce_mean(tf.maximum(basic_loss, 0.0), 0)
       
     return loss
