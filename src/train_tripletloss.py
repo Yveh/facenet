@@ -144,7 +144,7 @@ def main(args):
 
         #MODIFICATION: Add variance deviation loss  (our code)
         variance_deviation_loss = facenet.variance_deviation_loss(embeddings)
-        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES,  variance_deviation_loss * args.variance_loss_factor)
+        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES,  variance_deviation_loss * args.std_loss_factor)
 
         # Calculate the total losses
         regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
